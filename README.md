@@ -1,0 +1,2 @@
+# ITEW6_FULL_STACK_PROJECT_MIDTERM
+CCS system for the CCS office
