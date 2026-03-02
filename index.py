@@ -189,6 +189,109 @@ rbac_fields = [
     ('LastReviewed',    'DATE',           'A'),
 ]
 
+# ── MODULE 1:3 — EVENTS ──────────────────────────────────────────────────────
+dept_event = [
+    ('EventID',         'INT PK',         'A'), ('EventName',       'VARCHAR(200)',   'S'),
+    ('EventType',       'ENUM',           'S'), ('Category',        'ENUM',           'S'),
+    ('Description',     'TEXT',           'S'), ('Venue',           'VARCHAR(150)',   'S'),
+    ('StartDate',       'DATE',           'S'), ('EndDate',         'DATE',           'S'),
+    ('StartTime',       'TIME',           'S'), ('EndTime',         'TIME',           'S'),
+    ('OrganizerID',     'FK',             'A'), ('Status',          'ENUM',           'S'),
+    ('MaxParticipants', 'INT',            'S'), ('IsPublic',        'BOOLEAN',        'S'),
+    ('CoverImageFile',  'VARCHAR(255)',   'A'), ('CreatedBy',       'VARCHAR(50)',    'A'),
+    ('DateCreated',     'DATETIME',       'A'),
+]
+event_participant = [
+    ('ParticipantID',   'INT PK',         'A'), ('EventID',         'FK',             'A'),
+    ('EntityType',      'ENUM',           'S'), ('EntityID',        'VARCHAR(12)',    'S'),
+    ('Role',            'ENUM',           'S'), ('RegistrationDate','DATETIME',       'S'),
+    ('AttendanceStatus','ENUM',           'S'), ('AwardReceived',   'VARCHAR(200)',   'S'),
+    ('CertIssued',      'BOOLEAN',        'A'), ('Remarks',         'TEXT',           'A'),
+]
+event_announcement = [
+    ('AnnouncementID',  'INT PK',         'A'), ('EventID',         'FK',             'A'),
+    ('Title',           'VARCHAR(200)',   'S'), ('Content',         'TEXT',           'S'),
+    ('PostedBy',        'VARCHAR(50)',    'A'), ('DatePosted',      'DATETIME',       'S'),
+    ('IsUrgent',        'BOOLEAN',        'S'), ('TargetAudience',  'ENUM',           'S'),
+]
+
+# ── MODULE 1:4 — SCHEDULING ───────────────────────────────────────────────────
+# LectureType: Regular=2hrs, Major=3hrs
+timeslot = [
+    ('TimeslotID',      'INT PK',         'A'), ('Day',             'ENUM',           'S'),
+    ('StartTime',       'TIME',           'S'), ('EndTime',         'TIME',           'S'),
+    ('DurationHrs',     'DECIMAL(3,1)',   'S'), ('LectureType',     'ENUM',           'S'),
+    ('IsOccupied',      'BOOLEAN',        'S'), ('Room',            'VARCHAR(80)',    'S'),
+    ('Building',        'VARCHAR(80)',    'S'), ('Capacity',        'INT',            'S'),
+    ('AcademicYear',    'VARCHAR(9)',     'S'), ('Semester',        'ENUM',           'S'),
+]
+schedule_entry = [
+    ('ScheduleID',      'INT PK',         'A'), ('TimeslotID',      'FK',             'A'),
+    ('CourseCode',      'VARCHAR(15)',    'S'), ('CourseName',      'VARCHAR(150)',   'S'),
+    ('Section',         'VARCHAR(10)',    'S'), ('FacultyID',       'FK',             'S'),
+    ('LectureType',     'ENUM',           'S'), ('DurationHrs',     'DECIMAL(3,1)',   'S'),
+    ('Units',           'INT',            'S'), ('ProgramOffering', 'VARCHAR(60)',    'S'),
+    ('YearLevel',       'ENUM',           'S'), ('EnrolledCount',   'INT',            'S'),
+    ('ConflictFlag',    'BOOLEAN',        'A'), ('ApprovedBy',      'VARCHAR(50)',    'A'),
+    ('DateApproved',    'DATE',           'A'),
+]
+# ENUM values note: LectureType — 'Regular' occupies 2-hr slot, 'Major' occupies 3-hr slot
+
+# ── MODULE 1:5 — COLLEGE RESEARCH ────────────────────────────────────────────
+research_project = [
+    ('ResearchID',      'INT PK',         'A'), ('Title',           'VARCHAR(300)',   'S'),
+    ('Abstract',        'TEXT',           'S'), ('Keywords',        'VARCHAR(300)',   'S'),
+    ('ResearchType',    'ENUM',           'S'), ('Status',          'ENUM',           'S'),
+    ('StartDate',       'DATE',           'S'), ('EndDate',         'DATE',           'S'),
+    ('FundingSource',   'VARCHAR(150)',   'S'), ('BudgetAmt',       'DECIMAL(12,2)', 'A'),
+    ('PublicationURL',  'VARCHAR(255)',   'S'), ('DOI',             'VARCHAR(100)',   'S'),
+    ('JournalName',     'VARCHAR(200)',   'S'), ('PublishedDate',   'DATE',           'S'),
+    ('Department',      'VARCHAR(60)',    'S'), ('CreatedBy',       'VARCHAR(50)',    'A'),
+    ('DateCreated',     'DATETIME',       'A'),
+]
+research_member = [
+    ('MemberRecID',     'INT PK',         'A'), ('ResearchID',      'FK',             'A'),
+    ('EntityType',      'ENUM',           'S'), ('EntityID',        'VARCHAR(12)',    'S'),
+    ('Role',            'ENUM',           'S'), ('ContributionPct', 'DECIMAL(5,2)',   'A'),
+    ('DateJoined',      'DATE',           'S'), ('IsLead',          'BOOLEAN',        'S'),
+]
+research_document = [
+    ('DocID',           'INT PK',         'A'), ('ResearchID',      'FK',             'A'),
+    ('DocType',         'ENUM',           'S'), ('DocTitle',        'VARCHAR(200)',   'S'),
+    ('FilePath',        'VARCHAR(255)',   'A'), ('UploadedBy',      'VARCHAR(50)',    'A'),
+    ('DateUploaded',    'DATETIME',       'A'), ('Version',         'VARCHAR(20)',    'S'),
+    ('IsPublic',        'BOOLEAN',        'S'),
+]
+
+# ── MODULE 1:6 — INSTRUCTIONS (Syllabus, Curriculum, Lessons) ─────────────────
+curriculum = [
+    ('CurriculumID',    'INT PK',         'A'), ('CurriculumCode',  'VARCHAR(20)',    'S'),
+    ('Program',         'VARCHAR(60)',    'S'), ('EffectiveYear',   'YEAR',           'S'),
+    ('TotalUnits',      'INT',            'S'), ('Description',     'TEXT',           'S'),
+    ('Status',          'ENUM',           'S'), ('ApprovedBy',      'VARCHAR(100)',   'A'),
+    ('DateApproved',    'DATE',           'A'), ('CreatedBy',       'VARCHAR(50)',    'A'),
+]
+syllabus = [
+    ('SyllabusID',      'INT PK',         'A'), ('CourseCode',      'VARCHAR(15)',    'S'),
+    ('CourseName',      'VARCHAR(150)',   'S'), ('CurriculumID',    'FK',             'A'),
+    ('FacultyID',       'FK',             'S'), ('AcademicYear',    'VARCHAR(9)',     'S'),
+    ('Semester',        'ENUM',           'S'), ('Units',           'INT',            'S'),
+    ('LectureHrs',      'INT',            'S'), ('LabHrs',          'INT',            'S'),
+    ('CourseDesc',      'TEXT',           'S'), ('Objectives',      'TEXT',           'S'),
+    ('Outcomes',        'TEXT',           'S'), ('References',      'TEXT',           'S'),
+    ('GradingSystem',   'TEXT',           'S'), ('Status',          'ENUM',           'A'),
+    ('ApprovedBy',      'VARCHAR(100)',   'A'), ('DateApproved',    'DATE',           'A'),
+]
+lesson = [
+    ('LessonID',        'INT PK',         'A'), ('SyllabusID',      'FK',             'A'),
+    ('WeekNo',          'INT',            'S'), ('TopicTitle',      'VARCHAR(200)',   'S'),
+    ('LearningOutcomes','TEXT',           'S'), ('Content',         'TEXT',           'S'),
+    ('TeachingMethod',  'ENUM',           'S'), ('ActivityType',    'ENUM',           'S'),
+    ('ResourcesNeeded', 'TEXT',           'S'), ('DurationHrs',     'DECIMAL(3,1)',   'S'),
+    ('AssessmentType',  'ENUM',           'S'), ('FacultyNotes',    'TEXT',           'A'),
+    ('LessonFile',      'VARCHAR(255)',   'A'), ('DateCreated',     'DATETIME',       'A'),
+]
+
 # ══════════════════════════════════════════════════════════════════════════════
 #  DRAWING UTILITIES
 # ══════════════════════════════════════════════════════════════════════════════
@@ -578,3 +681,58 @@ draw_legend(ax, fw, C['acc_r'])
 save(fig, 'CCS_RBAC_DataMap.png')
 
 print('\nAll 3 diagrams generated successfully.')
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  DIAGRAM 4 — MANDATORY MODULES (Events, Scheduling, Research, Instructions)
+# ══════════════════════════════════════════════════════════════════════════════
+m_c0 = [dept_event, event_participant, event_announcement]
+m_t0 = ['Events — Department Event', 'Events — Participant Registry', 'Events — Announcements']
+
+m_c1 = [timeslot, schedule_entry]
+m_t1 = ['Scheduling — Timeslot', 'Scheduling — Schedule Entry']
+
+m_c2 = [research_project, research_member, research_document]
+m_t2 = ['Research — Project', 'Research — Members', 'Research — Documents']
+
+m_c3 = [curriculum, syllabus, lesson]
+m_t3 = ['Instructions — Curriculum', 'Instructions — Syllabus', 'Instructions — Lessons']
+
+mh0 = sum(box_height(f) for f in m_c0) + GAP_BOX*(len(m_c0)-1)
+mh1 = sum(box_height(f) for f in m_c1) + GAP_BOX*(len(m_c1)-1)
+mh2 = sum(box_height(f) for f in m_c2) + GAP_BOX*(len(m_c2)-1)
+mh3 = sum(box_height(f) for f in m_c3) + GAP_BOX*(len(m_c3)-1)
+
+ACC_EVT = '#34D399'; HDR_EVT = '#064E3B'
+ACC_SCH = '#FBBF24'; HDR_SCH = '#78350F'
+ACC_RES = '#F472B6'; HDR_RES = '#831843'
+ACC_INS = '#818CF8'; HDR_INS = '#1E1B4B'
+
+fig, ax, fw, fh, base_y, content_h = make_canvas(4, [mh0, mh1, mh2, mh3],
+    'CCS — Mandatory Modules Data Map')
+
+draw_title(ax, fw, fh, base_y, content_h,
+    'CCS DEPARTMENT SYSTEM — MANDATORY MODULES DATA MAPPING',
+    'Module 1:3 Events  |  1:4 Scheduling (Regular=2hrs / Major=3hrs)  |  1:5 College Research  |  1:6 Instructions')
+
+draw_col_label(ax, col_x(0), base_y, content_h, 'MODULE 1:3 — EVENTS',         ACC_EVT)
+draw_col_label(ax, col_x(1), base_y, content_h, 'MODULE 1:4 — SCHEDULING',      ACC_SCH)
+draw_col_label(ax, col_x(2), base_y, content_h, 'MODULE 1:5 — COLLEGE RESEARCH', ACC_RES)
+draw_col_label(ax, col_x(3), base_y, content_h, 'MODULE 1:6 — INSTRUCTIONS',    ACC_INS)
+
+mboxes0 = stack_col(ax, col_x(0), m_c0, m_t0, HDR_EVT, ACC_EVT, set(), base_y, content_h)
+mboxes1 = stack_col(ax, col_x(1), m_c1, m_t1, HDR_SCH, ACC_SCH, set(), base_y, content_h)
+mboxes2 = stack_col(ax, col_x(2), m_c2, m_t2, HDR_RES, ACC_RES, set(), base_y, content_h)
+mboxes3 = stack_col(ax, col_x(3), m_c3, m_t3, HDR_INS, ACC_INS, set(), base_y, content_h)
+
+draw_spine(ax, mboxes0, ACC_EVT)
+draw_spine(ax, mboxes1, ACC_SCH)
+draw_spine(ax, mboxes2, ACC_RES)
+draw_spine(ax, mboxes3, ACC_INS)
+
+draw_link(ax, mboxes0[0], mboxes1[1], ACC_EVT, lw=1.8, style='dashed')
+draw_link(ax, mboxes3[1], mboxes1[1], ACC_INS, lw=1.8, style='dashed')
+
+draw_legend(ax, fw, ACC_SCH)
+save(fig, 'CCS_Modules_DataMap.png')
+
+print('All 4 diagrams generated successfully.')
